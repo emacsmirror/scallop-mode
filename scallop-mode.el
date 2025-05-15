@@ -51,7 +51,8 @@
   "List of Scallop special constants.")
 
 (defconst scallop-special-operators
-  '(":-")
+  '(":-"
+    "<:")
   "List of Scallop special operators.")
 
 (defconst scallop-special-types
@@ -85,13 +86,6 @@
    (rx symbol-end))
   "Regular expression to match Scallop special constants.")
 
-(defvar scallop-special-operators-regexp
-  (concat
-   (rx symbol-start)
-   (regexp-opt scallop-special-operators t)
-   (rx symbol-end))
-  "Regular expression to match Scallop special operators.")
-
 (defvar scallop-special-types-regexp
   (concat
    (rx symbol-start)
@@ -99,7 +93,7 @@
    (rx symbol-end))
   "Regular expression to match Scallop special types.")
 
-(defun scallop--match-regexp (re limit)
+(defun scallop-match-regexp (re limit)
   "Generic regular expression matching wrapper for RE with a given LIMIT."
   (re-search-forward re
                      limit ; search bound
@@ -107,22 +101,32 @@
                      nil   ; do not repeat
                      ))
 
-(defun scallop--match-relation-name (limit)
-  "Search the buffer forward until LIMIT matching relation names.
+(defun scallop-match-relation-names (limit)
+  "Search the buffer forward until LIMIT to match the relation names.
 Highlight the 1st result."
-  (scallop--match-regexp
-   (concat
-    (rx symbol-start) "\\([a-zA-Z0-9_]+\\)" (rx symbol-end)
-    "[[:space:]]*\\((\\|\\[[^\\[]*\\](\\)")
+  (scallop-match-regexp
+   (concat (rx symbol-start) "\\([a-zA-Z0-9_]+\\)" (rx symbol-end)
+           "[[:space:]]*\\((\\|\\[[^\\[]*\\](\\)")
+   limit))
+
+(defun scallop-match-special-operators (limit)
+  "Search the buffer forward until LIMIT to match the special operators.
+Highlight the 1st result."
+  (scallop-match-regexp
+   (concat (rx (or alnum space "(" ")"))
+           (regexp-opt scallop-special-operators t)
+           (rx (or alnum space "(" ")")))
    limit))
 
 (defconst scallop-font-locks
   (list
    `(,scallop-keywords-regexp . font-lock-keyword-face)
    `(,scallop-special-constants-regexp . font-lock-constant-face)
-   `(,scallop-special-operators-regexp . font-lock-operator-face)
    `(,scallop-special-types-regexp . font-lock-type-face)
-   '(scallop--match-relation-name (1 font-lock-function-name-face)))
+   '(scallop-match-relation-names (1 font-lock-function-name-face))
+   ;; HACK: Temporarily use `font-lock-negation-char-face' for operators.
+   ;; Not sure why using `font-lock-operator-face' doesn't highlight the operators.
+   '(scallop-match-special-operators (1 font-lock-negation-char-face keep)))
   "Font lock settings for `scallop-mode'.")
 
 ;;;;;;;;;;;;;;;;;;
@@ -190,7 +194,7 @@ Highlight the 1st result."
   (setq-local comment-use-syntax t))
 
 ;;;###autoload
-(add-to-list 'auto-mode-alist '("\\.scallop\\'" . scallop-mode))
+(add-to-list 'auto-mode-alist '("\\.scl\\'" . scallop-mode))
 
 ;; Finally export the `scallop-mode'
 (provide 'scallop-mode)
