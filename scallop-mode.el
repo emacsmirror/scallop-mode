@@ -39,7 +39,9 @@
 (require 'rx)
 
 (defconst scallop-keywords
-  '("query"
+  '("and"
+    "or"
+    "query"
     "rel"
     "type")
   "List of Scallop keywords.")
@@ -52,14 +54,32 @@
   "List of Scallop special constants.")
 
 (defconst scallop-special-operators
-  '(":"
+  '("~"
+    ":"
+    "::"
     ":-"
     "<:")
   "List of Scallop special operators.")
 
 (defconst scallop-special-types
-  '("String"
-    "usize")
+  '("bool"
+    "char"
+    "f32"
+    "f64"
+    "i8"
+    "i16"
+    "i32"
+    "i64"
+    "i128"
+    "isize"
+    "u8"
+    "u16"
+    "u32"
+    "u64"
+    "u128"
+    "usize"
+    "str"
+    "String")
   "List of Scallop special types.")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -103,7 +123,7 @@
   "Search the buffer forward until the BOUND position to match relation names.
 The relation names are matched in the 2nd group."
   (scallop-match-regexp
-   (concat "\\(rel\\|query\\)[[:space:]]*\\([a-zA-Z0-9_]+\\)" )
+   (concat "\\(rel\\|query\\)[[:space:]]*\\([a-zA-Z_][a-zA-Z0-9_]*\\)" )
    bound))
 
 (defun scallop-match-relation-calls (bound)
