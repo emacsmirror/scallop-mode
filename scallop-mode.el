@@ -123,18 +123,39 @@ The operators are matched in the 1st group."
            (rx (or alnum space "(" ")")))
    bound))
 
+(defun scallop-match-type-names (bound)
+  "Search the buffer forward until the BOUND position to match type names.
+The relation names are matched in the 1st group."
+  (scallop-match-regexp
+   (concat "type[[:space:]]*\\([a-zA-Z0-9_]+\\)" )
+   bound))
+
+(defun scallop-match-super-type-names (bound)
+  "Search the buffer forward until the BOUND position to match super type names.
+The relation names are matched in the 1st group."
+  (scallop-match-regexp
+   (concat "<:[[:space:]]*\\([a-zA-Z0-9_]+\\)" )
+   bound))
+
 (defconst scallop-font-locks
   (list
-   `(,scallop-keywords-regexp . font-lock-keyword-face)
+   ;; == Constants ==
    `(,scallop-special-constants-regexp . font-lock-constant-face)
-   `(,scallop-special-types-regexp . font-lock-type-face)
-   '(scallop-match-relation-names (2 font-lock-function-name-face))
-   ;; HACK: Temporarily use `font-lock-function-name-face' for relation calls.
-   ;; Not sure why using `font-lock-function-call-face' doesn't highlight the relation calls.
-   '(scallop-match-relation-calls (1 font-lock-function-name-face))
+   ;; == Keywords ==
+   `(,scallop-keywords-regexp . font-lock-keyword-face)
+   ;; == Operators ==
    ;; HACK: Temporarily use `font-lock-negation-char-face' for operators.
    ;; Not sure why using `font-lock-operator-face' doesn't highlight the operators.
-   '(scallop-match-special-operators (1 font-lock-negation-char-face keep)))
+   `(scallop-match-special-operators (1 font-lock-negation-char-face keep))
+   ;; == Types ==
+   `(,scallop-special-types-regexp . font-lock-type-face)
+   `(scallop-match-type-names (1 font-lock-type-face))
+   `(scallop-match-super-type-names (1 font-lock-type-face))
+   ;; == Relations ==
+   `(scallop-match-relation-names (2 font-lock-function-name-face))
+   ;; HACK: Temporarily use `font-lock-function-name-face' for relation calls.
+   ;; Not sure why using `font-lock-function-call-face' doesn't highlight the relation calls.
+   '(scallop-match-relation-calls (1 font-lock-function-name-face)))
   "Font lock settings for `scallop-mode'.")
 
 ;;;;;;;;;;;;;;;;;;
