@@ -39,8 +39,9 @@
 (require 'rx)
 
 (defconst scallop-keywords
-  '("type"
-    "rel")
+  '("query"
+    "rel"
+    "type")
   "List of Scallop keywords.")
 
 (defconst scallop-special-constants
@@ -51,7 +52,8 @@
   "List of Scallop special constants.")
 
 (defconst scallop-special-operators
-  '(":-"
+  '(":"
+    ":-"
     "<:")
   "List of Scallop special operators.")
 
@@ -93,37 +95,43 @@
    (rx symbol-end))
   "Regular expression to match Scallop special types.")
 
-(defun scallop-match-regexp (re limit)
-  "Generic regular expression matching wrapper for RE with a given LIMIT."
-  (re-search-forward re
-                     limit ; search bound
-                     t     ; no error, return nil
-                     nil   ; do not repeat
-                     ))
+(defun scallop-match-regexp (regexp bound)
+  "Generic regular expression matching wrapper for REGEXP until a BOUND position."
+  (re-search-forward regexp bound t nil))
 
-(defun scallop-match-relation-names (limit)
-  "Search the buffer forward until LIMIT to match the relation names.
-Highlight the 1st result."
+(defun scallop-match-relation-names (bound)
+  "Search the buffer forward until the BOUND position to match relation names.
+The relation names are matched in the 2nd group."
+  (scallop-match-regexp
+   (concat "\\(rel\\|query\\)[[:space:]]*\\([a-zA-Z0-9_]+\\)" )
+   bound))
+
+(defun scallop-match-relation-calls (bound)
+  "Search the buffer forward until the BOUND position to match relation calls.
+The relation calls are matched in the 1st group."
   (scallop-match-regexp
    (concat (rx symbol-start) "\\([a-zA-Z0-9_]+\\)" (rx symbol-end)
            "[[:space:]]*\\((\\|\\[[^\\[]*\\](\\)")
-   limit))
+   bound))
 
-(defun scallop-match-special-operators (limit)
-  "Search the buffer forward until LIMIT to match the special operators.
-Highlight the 1st result."
+(defun scallop-match-special-operators (bound)
+  "Search the buffer forward until the BOUND position to match special operators.
+The operators are matched in the 1st group."
   (scallop-match-regexp
    (concat (rx (or alnum space "(" ")"))
            (regexp-opt scallop-special-operators t)
            (rx (or alnum space "(" ")")))
-   limit))
+   bound))
 
 (defconst scallop-font-locks
   (list
    `(,scallop-keywords-regexp . font-lock-keyword-face)
    `(,scallop-special-constants-regexp . font-lock-constant-face)
    `(,scallop-special-types-regexp . font-lock-type-face)
-   '(scallop-match-relation-names (1 font-lock-function-name-face))
+   '(scallop-match-relation-names (2 font-lock-function-name-face))
+   ;; HACK: Temporarily use `font-lock-function-name-face' for relation calls.
+   ;; Not sure why using `font-lock-function-call-face' doesn't highlight the relation calls.
+   '(scallop-match-relation-calls (1 font-lock-function-name-face))
    ;; HACK: Temporarily use `font-lock-negation-char-face' for operators.
    ;; Not sure why using `font-lock-operator-face' doesn't highlight the operators.
    '(scallop-match-special-operators (1 font-lock-negation-char-face keep)))
