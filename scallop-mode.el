@@ -187,17 +187,19 @@ The relation names are matched in the 1st group."
              (depth (car ppss))
              (paren-start-pos (cadr ppss))
              (base (* tab-width depth)))
-        (unless (= depth 0)
-          (setq indent base)
-          (cond ((looking-at "\s*[})]")
-                 ;; closing a block or a parentheses pair
-                 (setq indent (- base tab-width)))
-                ((looking-at "\s*:=")
-                 ;; indent for multiple-line assignment
-                 (setq indent (+ base (* 2 tab-width))))
-                ((looking-back "\s*:=\s*\n\s*")
-                 ;; indent for multiple-line assignment
-                 (setq indent (+ base (* 2 tab-width))))))))
+        (setq indent base)
+        (cond (;; Closing a block or a parentheses pair
+               (looking-at "\s*[})]")
+               (setq indent (- base tab-width)))
+              (;; Indent multiple-line subtyping definition
+               (looking-at "\s*<:")
+               (setq indent (+ base (* 2 tab-width))))
+              (;; Indent multiple-line relation definition
+               (looking-at "\s*:-")
+               (setq indent (+ base (* 2 tab-width))))
+              (;; Indent multiple-line relation definition
+               (looking-back "\s*:-\s*\n\s*")
+               (setq indent (+ base (* 2 tab-width)))))))
     indent))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
