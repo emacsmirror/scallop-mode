@@ -40,10 +40,14 @@
 
 (defconst scallop-keywords
   '("and"
+    "count"
+    "exists"
+    "forall"
     "or"
     "query"
     "rel"
-    "type")
+    "type"
+    "where")
   "List of Scallop keywords.")
 
 (defconst scallop-special-constants
@@ -56,8 +60,10 @@
 (defconst scallop-special-operators
   '("~"
     ":"
-    "::"
+    "="
     ":-"
+    "::"
+    ":="
     "<:")
   "List of Scallop special operators.")
 
