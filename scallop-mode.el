@@ -220,11 +220,14 @@ The relation names are matched in the 1st group."
               (;; Indent multiple-line subtyping definition
                (looking-at "\s*<:")
                (setq indent (+ base (* 2 tab-width))))
-              (;; Indent multiple-line relation definition
+              (;; Indent multiple-line definition
                (looking-at "\s*:-")
                (setq indent (+ base (* 2 tab-width))))
-              (;; Indent multiple-line relation definition
-               (looking-back "\s*:-\s*\n\s*")
+              (;; Indent multiple-line definition by looking back
+               (looking-back "\s*\\(:-\\|and\\|or\\|,\\)\s*\n\s*")
+               (setq indent (+ base (* 2 tab-width))))
+              (;; Indent multiple-line definition by looking at
+               (looking-at "^\s*\\(:-\\|and\\|or\\)\s*")
                (setq indent (+ base (* 2 tab-width)))))))
     indent))
 
