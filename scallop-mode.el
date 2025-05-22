@@ -1,4 +1,4 @@
-;;; scallop-mode.el --- Major mode for editing Scallop programming language.
+;;; scallop-mode.el --- Major mode for editing Scallop programming language  -*- lexical-binding: t -*-
 
 ;; Copyright © 2025, by Ta Quang Trung
 
@@ -6,6 +6,7 @@
 ;; Version: 0.0.1
 ;; Created: 14 May, 2025
 ;; Keywords: languages
+;; Package-Requires: ((emacs "24.3"))
 ;; Homepage: https://github.com/taquangtrung/emacs-scallop-mode
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -211,7 +212,6 @@ The relation names are matched in the 1st group."
       (back-to-indentation)
       (let* ((ppss (syntax-ppss))
              (depth (car ppss))
-             (paren-start-pos (cadr ppss))
              (base (* tab-width depth)))
         (setq indent base)
         (cond (;; Closing a block or a parentheses pair
@@ -224,7 +224,7 @@ The relation names are matched in the 1st group."
                (looking-at "\s*:-")
                (setq indent (+ base (* 2 tab-width))))
               (;; Indent multiple-line definition by looking back
-               (looking-back "\s*\\(:-\\|and\\|or\\|,\\)\s*\n\s*")
+               (looking-back "\s*\\(:-\\|and\\|or\\|,\\)\s*\n\s*" nil nil)
                (setq indent (+ base (* 2 tab-width))))
               (;; Indent multiple-line definition by looking at
                (looking-at "^\s*\\(:-\\|and\\|or\\)\s*")

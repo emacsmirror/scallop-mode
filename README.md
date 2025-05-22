@@ -4,7 +4,7 @@ Emacs major mode for editing source code of the [Scallop](https://www.scallop-la
 
 ## Screenshot
 
-TODO
+![scallop-mode](screenshots/scallop-mode.png)
 
 ## Installation
 
