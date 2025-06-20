@@ -1,23 +1,29 @@
+<div align="center">
+
 # scallop-mode
 
 Emacs major mode for editing source code of the [Scallop](https://www.scallop-lang.org/) programming language.
 
-## Screenshot
+</div>
 
-![scallop-mode](screenshots/scallop-mode.png)
+---
 
-## Installation
+# Installation
 
 - Automatic package installation from [Melpa](https://melpa.org/).
 
-## Features
+# Features
 
-### Supported
+## Supported
 
 - Syntax highlighting.
 
 - Code indentation.
 
-### Todo
+## Todo
 
 - [ ] Code outline via Imenu
+
+# Screenshot
+
+![scallop-mode](screenshots/scallop-mode.png)
